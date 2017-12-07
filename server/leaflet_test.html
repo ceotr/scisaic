@@ -1,0 +1,43 @@
+<html>
+<head>
+    <title>tiletest</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <style>
+        .leaflet-container {
+            background-color:rgba(255,0,0,0.0);
+        }
+        #plot {
+            width: 100em;
+            height: 60em;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+            var bounds = [[10,793], [-734, -7]];      
+            var plot = L.map('plot', {
+                crs: L.CRS.Simple,
+                maxBounds: bounds
+            }).setView([0,0], 0);
+            var tms = L.tileLayer("tiles/{z}/{x}/{y}.png", {
+                // format: 'image/png',
+                // transparent: false
+                tms: true,
+                tileSize: 720,
+                maxZoom: 4
+            }).addTo(plot);
+            console.log(tms);
+            plot.on('click', function(e) {
+                alert("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng);
+                console.log(e);
+            });
+            plot.on('moveend', function() { 
+                 console.log(plot.getBounds());
+            });
+        }
+    </script>
+</head>
+<body>
+    <div id='plot'></div>
+</body>
+</html>
