@@ -1,0 +1,33 @@
+<html>
+<head>
+    <title>tiletest</title>
+    <script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous">
+    </script>
+    <script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+    <script type="text/javascript" src="scripts/scineo.js"></script>
+    <style>
+        #plot {
+            width: 720px;
+            height: 720px;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+            var tms_url = "tiles/{z}/{x}/{y}.png";
+            var starting_zoom = 0;
+            var max_zoom = 4
+            var tile_size = 720;
+            var plot_obj = $('#plot');
+
+            plot_obj.addClass( "scineo-container" );
+            var zoom_level = starting_zoom;
+        }
+    </script>
+</head>
+<body>
+    <canvas id='plot' width=720 height=720></canvas>
+</body>
+</html>
