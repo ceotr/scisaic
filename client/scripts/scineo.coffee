@@ -52,66 +52,70 @@ $(window).on "load", ->
                 tileManager.stage.removeChild(tileManager.previousContainer)
                 # tileManager.previousContainer.visible = false
 
+        nextLayer: () ->
+            tileManager.zoomLevel += 1
+            tileManager.replaceLayer()
+
+        previousLayer: () ->
+            tileManager.zoomLevel -= 1
+            tileManager.replaceLayer()
+
+        replaceLayer: () ->
+            # Before replacing the layer store any information which will be replaced
+            previousBounds = tileManager.stage.getBounds()
+            oldLayerBounds = $.extend({}, tileManager.layerBounds)
+
+            # Load the new layer based on the stored zoomLevel
+            tileManager.addLayer(tileManager.zoomLevel)
+
+            # Convert the anchor point from the old layer and assign it to the new layer
+            pc = tileManager.previousContainer
+            newReg = {
+                x: (pc.regX / oldLayerBounds.width) * tileManager.layerBounds.width,
+                y: (pc.regY / oldLayerBounds.height) * tileManager.layerBounds.height
+            }
+            tileManager.currentContainer.regX = newReg.x
+            tileManager.currentContainer.regY = newReg.y
+
+            # Convert the scale factors from the old layer and adjust the new layer to be the same size
+            tileManager.currentContainer.scaleX = previousBounds.width / tileManager.layerBounds.width
+            tileManager.currentContainer.scaleY = previousBounds.height / tileManager.layerBounds.height
+            
+            # Since the new layer is now the same size with the same anchor point as the old layer
+            # the coordinates from the old layer can be directly assigned to the new layer
+            tileManager.currentContainer.x = pc.x
+            tileManager.currentContainer.y = pc.y
+            tileManager.stage.update()
+
         zoom: (e) ->
-            if Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail))) > 0
+            # Function to handle scroll wheel zooming
+            if Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail || -e.deltaY))) > 0
                 zoom = 1.1
             else
                 zoom = 1/1.1
 
-            if (tileManager.currentContainer.scaleX > 1 || tileManager.currentContainer.scaleY > 1) && zoom > 1
+            if (tileManager.currentContainer.scaleX > 1.1 || tileManager.currentContainer.scaleY > 1.1) && zoom > 1
                 if tileManager.zoomLevel < tileManager.maxZoom
-                    previousBounds = tileManager.stage.getBounds()
-                    console.log previousBounds
-                    oldLayerBounds = $.extend({}, tileManager.layerBounds)
-
-                    tileManager.zoomLevel += 1
-                    tileManager.addLayer(tileManager.zoomLevel)
-
-                    pc = tileManager.previousContainer
-                    # newReg = pc.localToGlobal(pc.regX, pc.regY)
-                    console.log "Old Reg:"
-                    console.log(pc.regX, pc.regY)
-                    console.log "Old Size:"
-                    console.log(oldLayerBounds.width, oldLayerBounds.height)
-                    console.log "New Size:"
-                    console.log(tileManager.layerBounds.width, tileManager.layerBounds.height)
-                    newReg = {
-                        x: (pc.regX / oldLayerBounds.width) * tileManager.layerBounds.width,
-                        y: (pc.regY / oldLayerBounds.height) * tileManager.layerBounds.height
-                    }
-                    tileManager.currentContainer.regX = newReg.x
-                    tileManager.currentContainer.regY = newReg.y
-                    console.log "New Reg:"
-                    console.log(newReg.x, newReg.y)
-
-                    # console.log tileManager.stage.getBounds()
-                    # console.log tileManager.layerBounds
-
-                    tileManager.currentContainer.scaleX = previousBounds.width / tileManager.layerBounds.width
-                    tileManager.currentContainer.scaleY = previousBounds.height / tileManager.layerBounds.height
-                    
-                    oldBounds = pc.getBounds()
-                    newPos = pc.localToGlobal(oldBounds.x, oldBounds.y)
-                    # tileManager.currentContainer.x = newPos.x
-                    # tileManager.currentContainer.y = newPos.y
-                    tileManager.currentContainer.x = pc.x
-                    tileManager.currentContainer.y = pc.y
-                    tileManager.stage.update()
-                    console.log(tileManager.stage.getBounds())
-                    console.log("-------------")
+                    tileManager.nextLayer()
+            else if (tileManager.currentContainer.scaleX < 0.9 || tileManager.currentContainer.scaleY < 0.9) && zoom < 1
+                if tileManager.zoomLevel > 0
+                    tileManager.previousLayer()
             else
+                # Get the current mouse position in local coordinates
                 local = tileManager.currentContainer.globalToLocal(tileManager.stage.mouseX, tileManager.stage.mouseY)
+                # Assign the local mouse position as the new anchor point so we can zoom around the mouse
                 tileManager.currentContainer.regX = local.x
                 tileManager.currentContainer.regY = local.y
+                # move the view so that the mouse is centered
                 tileManager.currentContainer.x = stage.mouseX
                 tileManager.currentContainer.y = stage.mouseY
+                # Double check that the user isn't zooming away from the plot
                 bounds = stage.getBounds()
                 if bounds.width > tile_size || zoom > 1
                     tileManager.currentContainer.scaleX *= zoom
                 if bounds.height > tile_size || zoom > 1
                     tileManager.currentContainer.scaleY *= zoom
-                stage.update()
-        
+                stage.update()    
     }
     tileManager.addLayer()
 
