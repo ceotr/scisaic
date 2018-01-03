@@ -14,6 +14,7 @@
     context.imageSmoothingEnabled = false;
     tileManager = {
       stage: stage,
+      canvas: canvas,
       currentContainer: container,
       previousContainer: null,
       zoomLevel: starting_zoom,
@@ -23,6 +24,29 @@
       layerBounds: {
         width: null,
         height: null
+      },
+      getView: function() {
+        var cSize;
+        cSize = {
+          width: canvas.width(),
+          height: canvas.height()
+        };
+        return container = tileManager.currentContainer;
+      },
+      // bounds = tileManager.stage.getBounds()
+      // bbox = [
+      //     {
+      //         x: Math.floor((bounds.x * -1) / tileManager.tileSize),
+      //         y: Math.floor(bounds.y / tileManager.tileSize)
+      //     },
+      //     {
+      //         x: Math.ceil(((bounds.x * -1) + cSize.width) / tileManager.tileSize),
+      //         y: Math.ceil((bounds.y + cSize.height) / tileManager.tileSize)
+      //     }
+      // ]
+      // console.log bbox
+      getDisplayedTiles: function() {
+        return console.log(tileManager.currentContainer);
       },
       addLayer: function(level = tileManager.zoomLevel) {
         var bounds, i, j, ref, ref1, tile, tileShape, url, x, y;
@@ -91,7 +115,9 @@
       },
       zoom: function(e) {
         var bounds, local, zoom;
+        tileManager.getDisplayedTiles();
         // Function to handle scroll wheel zooming
+        e.preventDefault();
         if (Math.max(-1, Math.min(1, e.wheelDelta || -e.detail || -e.deltaY)) > 0) {
           zoom = 1.1;
         } else {
@@ -129,16 +155,6 @@
     tileManager.addLayer();
     stage.addEventListener('stagemousedown', function(e) {
       var offset;
-      // console.log "Yo"
-      // console.log tileManager.stage.getBounds()
-      // bounds = tileManager.currentContainer.getBounds()
-      // console.log bounds
-      // console.log tileManager.currentContainer.localToGlobal(bounds.x, bounds.y)
-      // newBounds = tileManager.currentContainer.getBounds()
-      // xRatio = tileManager.currentContainer.x / newBounds.width
-      // yRatio = tileManager.currentContainer.y / newBounds.height
-      // console.log(tileManager.currentContainer.x, tileManager.currentContainer.y)
-      // console.log(xRatio, yRatio)
       offset = {
         x: container.x - e.stageX,
         y: container.y - e.stageY

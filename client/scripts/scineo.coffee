@@ -12,8 +12,11 @@ $(window).on "load", ->
 
     context = stage.canvas.getContext("2d")
     context.imageSmoothingEnabled = false
+
+
     tileManager = {
-        stage: stage
+        stage: stage,
+        canvas: canvas,
         currentContainer: container,
         previousContainer: null,
         zoomLevel: starting_zoom,
@@ -24,6 +27,30 @@ $(window).on "load", ->
             width: null,
             height: null
         },
+
+        getView: () ->
+            cSize = {
+                width: canvas.width(),
+                height: canvas.height()
+            }
+            container = tileManager.currentContainer
+
+            # bounds = tileManager.stage.getBounds()
+            # bbox = [
+            #     {
+            #         x: Math.floor((bounds.x * -1) / tileManager.tileSize),
+            #         y: Math.floor(bounds.y / tileManager.tileSize)
+            #     },
+            #     {
+            #         x: Math.ceil(((bounds.x * -1) + cSize.width) / tileManager.tileSize),
+            #         y: Math.ceil((bounds.y + cSize.height) / tileManager.tileSize)
+            #     }
+            # ]
+            # console.log bbox
+
+        getDisplayedTiles: () ->
+            console.log tileManager.currentContainer
+
 
         addLayer: (level=tileManager.zoomLevel) ->
             tileManager.previousContainer = tileManager.currentContainer
@@ -88,7 +115,10 @@ $(window).on "load", ->
             tileManager.stage.update()
 
         zoom: (e) ->
+            tileManager.getDisplayedTiles()
             # Function to handle scroll wheel zooming
+            e.preventDefault();
+
             if Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail || -e.deltaY))) > 0
                 zoom = 1.1
             else
@@ -120,16 +150,6 @@ $(window).on "load", ->
     tileManager.addLayer()
 
     stage.addEventListener 'stagemousedown', (e) ->
-        # console.log "Yo"
-        # console.log tileManager.stage.getBounds()
-        # bounds = tileManager.currentContainer.getBounds()
-        # console.log bounds
-        # console.log tileManager.currentContainer.localToGlobal(bounds.x, bounds.y)
-        # newBounds = tileManager.currentContainer.getBounds()
-        # xRatio = tileManager.currentContainer.x / newBounds.width
-        # yRatio = tileManager.currentContainer.y / newBounds.height
-        # console.log(tileManager.currentContainer.x, tileManager.currentContainer.y)
-        # console.log(xRatio, yRatio)
         offset =
             x: container.x - e.stageX,
             y: container.y - e.stageY
