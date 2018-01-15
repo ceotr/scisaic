@@ -7,11 +7,17 @@
         crossorigin="anonymous">
     </script>
     <script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.12.2/d3.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-scale/1.0.7/d3-scale.js"></script>
     <script type="text/javascript" src="scripts/scineo.js"></script>
     <style>
         #plot {
             width: 720px;
             height: 720px;
+            padding-top: 10px;
+        }
+        #plotContainer {
+            position: relative;
         }
     </style>
     <script>
@@ -28,6 +34,8 @@
     </script>
 </head>
 <body>
-    <canvas id='plot' width=720 height=720></canvas>
+    <div id="plotContainer">
+        <canvas id='plot' width=720 height=720></canvas>
+    </div>
 </body>
 </html>
